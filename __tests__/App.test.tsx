@@ -12,4 +12,3 @@ test('renders correctly', async () => {
     ReactTestRenderer.create(<App />);
   });
 });
-For()
