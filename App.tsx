@@ -1,14 +1,33 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from 'react';
+import {Text, View, StyleSheet} from 'react-native';
 
-const App = () => {
+const styles = StyleSheet.create({
+  center: {
+    alignItems: 'center',
+  },
+});
+
+type GreetingProps = {
+  name: string;
+};
+
+const Greeting = (props: GreetingProps) => {
   return (
-    <View>
-      <Text>App</Text>
+    <View style={styles.center}>
+      <Text>Hello {props.name}!</Text>
     </View>
-  )
-}
+  );
+};
 
-export default App
-const styles = StyleSheet.create({})
+const LotsOfGreetings = () => {
+  return (
+    <View style={[styles.center, {top: 50}]}>
+      <Greeting name="Rexxar" />
+      <Greeting name="Jaina" />
+      <Greeting name="Valeera" />
+    </View>
+  );
+};
 
+export default LotsOfGreetings;
+/* Testing with different default test from react-native site*/
