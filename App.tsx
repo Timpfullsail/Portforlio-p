@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, FlatList, StyleSheet } from "react-native";
-import { getMovieRecommendations, getAnimeRecommendations } from "./api";
+import { getMovieRecommendations, getAnimeRecommendations } from  "./newsrc/API";
 import Movie from "./newsrc/Components/Movie";
 import Animie from "./newsrc/Components/Animie";
 //import MovieRecommendations from "./Components/Movie";
