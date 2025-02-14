@@ -1,6 +1,6 @@
 import pandas as pd
 
-movies_df = pd.read_csv("data/TMDB 10000 Movies Dataset.csv")
+movies_df = pd.read_csv("Data/TMDB 10000 Movies Dataset.csv")
 def get_movie_recommendations(movie_title):
     
     if movie_title not in movies_df["title"].values:

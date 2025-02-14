@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 # Load anime dataset
-anime_df = pd.read_csv("anime.csv")
+anime_df = pd.read_csv("Data/anime.csv")
 
 def get_recommendations(query):
     recommendations = anime_df[anime_df["title"].str.contains(query, case=False, na=False)]
@@ -11,6 +11,5 @@ def get_recommendations(query):
 user_input = input("Enter anime name: ")
 results = get_recommendations(user_input)
 
-# Save to JSON
 with open("anime_results.json", "w") as f:
     json.dump(results, f)
