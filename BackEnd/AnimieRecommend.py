@@ -1,11 +1,16 @@
 import pandas as pd
-anime_df = pd.read_csv("data/anime.csv")
-def get_anime_recommendations(anime_title):
-    if anime_title not in anime_df["title"].values:
-        return ["Anime not found in database"]
+import json
 
-    genre = anime_df[anime_df["title"] == anime_title]["genre"].values[0]
-    recommendations = anime_df[anime_df["genre"] == genre]["title"].tolist()
+# Load anime dataset
+anime_df = pd.read_csv("anime.csv")
 
-    recommendations.remove(anime_title)
-    return recommendations[:10]
+def get_recommendations(query):
+    recommendations = anime_df[anime_df["title"].str.contains(query, case=False, na=False)]
+    return recommendations["title"].tolist()
+
+user_input = input("Enter anime name: ")
+results = get_recommendations(user_input)
+
+# Save to JSON
+with open("anime_results.json", "w") as f:
+    json.dump(results, f)

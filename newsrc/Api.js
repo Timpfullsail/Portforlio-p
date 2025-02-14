@@ -1,4 +1,4 @@
-import axios from "axios";
+/*import axios from "axios";
 
 const BASE_URL = "http://127.0.0.1:5000";
 
@@ -19,4 +19,4 @@ export const getAnimeRecommendations = async (anime) => {
         console.error("Error fetching anime recommendations:", error);
         return ["Error fetching recommendations"];
     }
-};
+};*/
