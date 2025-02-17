@@ -13,18 +13,18 @@ export default function App() {
 
     const fetchRecommendations = async () => {
         console.log("Fetching recommendations for:", input);
-        const animeData = await readCSVFile("anime.csv");
-        const movieData = await readCSVFile("TMDB_10000_Movies_Dataset.csv");
+        const animeData = await readCSVFile("Req.txt");
+        //const movieData = await readCSVFile("TMDB_10000_Movies_Dataset.csv");
         
 
         console.log("Anime data:", animeData.slice(0,5));
-        console.log("Movie data:", movieData.slice(0,5));
+        //console.log("Movie data:", movieData.slice(0,5));
        
         const filteredAnimes = animeData.filter(item => item.toLowerCase().includes(input.toLowerCase()));
-        const filteredMovies = movieData.filter(item => item.toLowerCase().includes(input.toLowerCase()));
+        //const filteredMovies = movieData.filter(item => item.toLowerCase().includes(input.toLowerCase()));
         
-        setMovies(filteredMovies);
-        setAnimes(filteredAnimes);
+        //setMovies(filteredMovies);
+        //setAnimes(filteredAnimes);
 
     };
     const requestStoragePermission = async () => {
@@ -54,17 +54,17 @@ export default function App() {
       requestStoragePermission();
   }, []);
     
-    const readCSVFile = async (fileName) => {
+    const readCSVFile = async (fileName: string) => {
         console.log(RNFS)
         try {
-          //const filePath = `${RNFS.MainBundlePath}/${fileName}`;
+          const filePath = `/android/app/src/main/res/raw/Req.txt`;
           //const newpath = RNFS.DocumentDirectoryPath;
           //const filePath = `${newpath}/${fileName}`;
           //const filePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
           //const filePath =`./android/app/src/main/Assets/${fileName}`
           //const filePath = `${RNFS.ExternalStorageDirectoryPath}/BackEnd/Data/${fileName}`;
           //const filePath = "/storage/emulated/0/Download/Req.txt";
-          const filePath = `/storage/emulated/0/Download/${fileName}`;
+          //const filePath = `/storage/emulated/0/Download/${fileName}`;
           console.log("Reading file from:", filePath);
           const content = await RNFS.readFile(filePath, "utf8");
 
