@@ -1,81 +1,40 @@
 import React, { useState, useEffect  } from "react";
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from "react-native";
+import { View, Text, TextInput, Button, FlatList, StyleSheet,Alert } from "react-native";
 //import { getMovieRecommendations, getAnimeRecommendations } from  "./newsrc/API";
 //import Movie from "./newsrc/Components/Movie";
 //import Animie from "./newsrc/Components/Animie";
 import RNFS from "react-native-fs";
-import { PermissionsAndroid } from "react-native";
+import { PermissionsAndroid , Platform  } from "react-native";
 
 export default function App() {
     const [input, setInput] = useState("");
     const [movies, setMovies] = useState([]);
     const [animes, setAnimes] = useState([]);
+    const fileName = "anime.csv"; 
 
     const fetchRecommendations = async () => {
-        console.log("Fetching recommendations for:", input);
-        const animeData = await readCSVFile("Req.txt");
-        //const movieData = await readCSVFile("TMDB_10000_Movies_Dataset.csv");
-        
-
-        console.log("Anime data:", animeData.slice(0,5));
-        //console.log("Movie data:", movieData.slice(0,5));
-       
-        const filteredAnimes = animeData.filter(item => item.toLowerCase().includes(input.toLowerCase()));
-        //const filteredMovies = movieData.filter(item => item.toLowerCase().includes(input.toLowerCase()));
-        
-        //setMovies(filteredMovies);
-        //setAnimes(filteredAnimes);
-
-    };
-    const requestStoragePermission = async () => {
       try {
-          const granted = await PermissionsAndroid.request(
-              PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-              {
-                  title: "Storage Permission",
-                  message: "This app needs access to your storage to read CSV files.",
-                  buttonNeutral: "Ask Me Later",
-                  buttonNegative: "Cancel",
-                  buttonPositive: "OK",
-              }
-          );
-  
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-              console.log("Storage permission granted");
-          } else {
-              console.log("Storage permission denied");
+          console.log(`📄 Attempting to read: ${fileName}`);
+
+          const exists = await RNFS.existsAssets(fileName);
+          if (!exists) {
+              console.error("❌ File does NOT exist in assets!");
+              Alert.alert("Error", "Req.txt is missing in assets. Make sure it's placed correctly and rebuild.");
+              return;
           }
-      } catch (err) {
-          console.warn(err);
+          const contents = await RNFS.readFileAssets(fileName, "utf8");
+          console.log("✅ File contents:", contents.substring(0, 200));
+  
+          const rows = contents.split("\n");
+          const filteredResults = rows.filter(item => item.toLowerCase().includes(input.toLowerCase()));
+  
+          // ✅ Update Movies List
+          //setMovies(filteredResults);
+      } catch (error) {
+          console.error("❌ Error reading file:", error);
+          Alert.alert("Error", `Could not read ${fileName}. Try rebuilding the app.`);
       }
   };
-  
-  useEffect(() => {
-      requestStoragePermission();
-  }, []);
-    
-    const readCSVFile = async (fileName: string) => {
-        console.log(RNFS)
-        try {
-          const filePath = `/android/app/src/main/res/raw/Req.txt`;
-          //const newpath = RNFS.DocumentDirectoryPath;
-          //const filePath = `${newpath}/${fileName}`;
-          //const filePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-          //const filePath =`./android/app/src/main/Assets/${fileName}`
-          //const filePath = `${RNFS.ExternalStorageDirectoryPath}/BackEnd/Data/${fileName}`;
-          //const filePath = "/storage/emulated/0/Download/Req.txt";
-          //const filePath = `/storage/emulated/0/Download/${fileName}`;
-          console.log("Reading file from:", filePath);
-          const content = await RNFS.readFile(filePath, "utf8");
-
-          return content.split("\n").map(row => row.split(",")[0]); 
-          
-        } catch (error) {
-          console.error(`Error reading ${fileName}:`, error);
-          return [];
-        }
-      };
-
    return (
     <View style={styles.container}>
       <Text style={styles.title}>                           Film Sage</Text>
