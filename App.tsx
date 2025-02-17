@@ -25,11 +25,12 @@ export default function App() {
           const contents = await RNFS.readFileAssets(fileName, "utf8");
           console.log("✅ File contents:", contents.substring(0, 200));
   
-          const rows = contents.split("\n");
+          const rows = contents.split("\n").map(row => row.trim());
           const filteredResults = rows.filter(item => item.toLowerCase().includes(input.toLowerCase()));
   
-          // ✅ Update Movies List
-          //setMovies(filteredResults);
+          setMovies(filteredResults);
+          setAnimes(filteredResults);
+
       } catch (error) {
           console.error("❌ Error reading file:", error);
           Alert.alert("Error", `Could not read ${fileName}. Try rebuilding the app.`);
@@ -37,7 +38,7 @@ export default function App() {
   };
    return (
     <View style={styles.container}>
-      <Text style={styles.title}>                           Film Sage</Text>
+      <Text style={styles.title}>Film Sage</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter movie or anime name"
@@ -58,16 +59,19 @@ export default function App() {
         data={animes}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => <Text>- {item}</Text>}
+        /*(
+            <Text style={styles.resultItem}>🎬 {item}</Text>*/
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: { padding: 20 },
-    title: { fontSize: 20, fontWeight: "bold" },
-    input: { borderWidth: 1, marginVertical: 10, padding: 8 },
-    subtitle: { fontSize: 18, marginTop: 20 },
+  container: { padding: 20, backgroundColor: "#fff", flex: 1 },
+  title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 10 },
+  input: { borderWidth: 1, borderColor: "#ccc", padding: 8, marginVertical: 10, borderRadius: 5 },
+  subtitle: { fontSize: 18, fontWeight: "bold", marginTop: 20 },
+  resultItem: { fontSize: 16, padding: 5, borderBottomWidth: 1, borderColor: "#ddd" },
 });
 
 
