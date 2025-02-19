@@ -40,24 +40,20 @@ export default function App() {
       const filteredAnimes = animeRows
         .filter(row => row.title?.toLowerCase().includes(input.toLowerCase()))
         .map(row => ({
-          title: row.title_english || row.title, // Use English title if available
-          rating: row.score || "N/A", // Rating
-          genres: row.genres || "Unknown", // Genres
-          description: row.synopsis || "No description available", // Description
+          title: row.title_english || row.title, 
+          rating: row.score || "N/A", 
+          genres: row.genres || "Unknown", 
+          description: row.synopsis || "No description available",
         }));
 
-      // ✅ Filter and extract movie results
       const filteredMovies = movieRows
         .filter(row => row.title?.toLowerCase().includes(input.toLowerCase()))
         .map(row => ({
-          title: row.title, // Movie title
-          rating: row.vote_average || "N/A", // Rating
-          popularity: row.popularity || "Unknown", // Popularity score
-          description: row.overview || "No description available", // Description
+          title: row.title, 
+          rating: row.vote_average || "N/A", 
+          popularity: row.popularity || "Unknown", 
+          description: row.overview || "No description available",
         }));
-      //const filteredanimes = animerow.filter(item => item.toLowerCase().includes(input.toLowerCase()));
-      //const filteredMovies = movieRow.filter(item => item.toLowerCase().includes(input.toLowerCase()));
-
       setMovies(filteredMovies);
       setAnimes(filteredAnimes);
 
@@ -90,7 +86,6 @@ export default function App() {
           </View>
         )}
       />
-
       <Text style={styles.subtitle}>🎭 Recommendation's:</Text>
       <FlatList
         data={animes}
@@ -100,14 +95,12 @@ export default function App() {
             <Text style={styles.itemTitle}>📺 {item.title}</Text>
             <Text style={styles.itemRating}>⭐ Rating: {item.rating}</Text>
             <Text style={styles.itemGenre}>🎭 Genre: {item.genres}</Text>
-
           </View>
         )}
       />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: "#f8f8f8", flex: 1 },
   title: { fontSize: 26, fontWeight: "bold", textAlign: "center", marginBottom: 10 },
