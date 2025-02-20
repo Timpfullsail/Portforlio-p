@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert } from "react-native";
+import {
+  View, Text, TextInput, Button, FlatList, StyleSheet, Alert,
+  TouchableOpacity, LayoutAnimation, UIManager, Platform
+} from "react-native";
 import RNFS from "react-native-fs";
-import { PermissionsAndroid, Platform } from "react-native";
 import { parse } from "papaparse";
+
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 export default function App() {
   const [input, setInput] = useState("");
   const [movies, setMovies] = useState([]);
   const [animes, setAnimes] = useState([]);
+  const [expandedItems, setExpandedItems] = useState({});
   const fileName = "anime.csv";
   const moviefile = "tmdb.csv";
 
@@ -37,21 +45,24 @@ export default function App() {
 
       console.log("🔍 First few rows from Anime CSV:", animeRows.slice(0, 5));
       console.log("🔍 First few rows from Anime CSV:", movieRows.slice(0, 5));
+      //The errors from this line down have to do with them being an any type nothing specific but still functional
       const filteredAnimes = animeRows
         .filter(row => row.title?.toLowerCase().includes(input.toLowerCase()))
         .map(row => ({
-          title: row.title_english || row.title, 
-          rating: row.score || "N/A", 
-          genres: row.genres || "Unknown", 
+          id: row.id || row.title,
+          title: row.title_english || row.title,
+          rating: row.score || "N/A",
+          genres: row.genres || "Unknown",
           description: row.synopsis || "No description available",
         }));
 
       const filteredMovies = movieRows
         .filter(row => row.title?.toLowerCase().includes(input.toLowerCase()))
         .map(row => ({
-          title: row.title, 
-          rating: row.vote_average || "N/A", 
-          popularity: row.popularity || "Unknown", 
+          id: row.id || row.title,
+          title: row.title,
+          rating: row.vote_average || "N/A",
+          popularity: row.popularity || "Unknown",
           description: row.overview || "No description available",
         }));
       setMovies(filteredMovies);
@@ -61,6 +72,14 @@ export default function App() {
       console.error("❌ Error reading file:", error);
       Alert.alert("Error", `Could not read ${fileName} or ${moviefile}. Try rebuilding the app.`);
     }
+  };
+
+  const toggleExpand = (id) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpandedItems(prevState => ({
+      ...prevState,
+      [id]: !prevState[id] || false, // Toggle expansion
+    }));
   };
   return (
     <View style={styles.container}>
@@ -73,29 +92,41 @@ export default function App() {
       />
       <Button title="Search" onPress={fetchRecommendations} />
 
-      <Text style={styles.subtitle}>🎬 Recommendation's:</Text>
+      {/* 🎬 MOVIES LIST */}
+      <Text style={styles.subtitle}>🎬 Recommended Movies:</Text>
       <FlatList
         data={movies}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.itemTitle}>🎬 {item.title}</Text>
-            <Text style={styles.itemRating}>⭐ Rating: {item.rating}</Text>
-            <Text style={styles.itemGenre}>🎭 popularity: {item.popularity}</Text>
-
-          </View>
+          <TouchableOpacity onPress={() => toggleExpand(item.id)}>
+            <View style={styles.card}>
+              <Text style={styles.itemTitle}>🎬 {item.title}</Text>
+              <Text style={styles.itemRating}>{item.rating}</Text>
+              <Text style={styles.itemGenre}>🎭 Popularity: {item.popularity}</Text>
+              {expandedItems[item.id] && (
+                <Text style={styles.itemDescription}>📝 {item.description}</Text>
+              )}
+            </View>
+          </TouchableOpacity>
         )}
       />
-      <Text style={styles.subtitle}>🎭 Recommendation's:</Text>
+
+      {/* 🎭 SHOWS LIST */}
+      <Text style={styles.subtitle}>🎭 Recommended Shows:</Text>
       <FlatList
         data={animes}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.itemTitle}>📺 {item.title}</Text>
-            <Text style={styles.itemRating}>⭐ Rating: {item.rating}</Text>
-            <Text style={styles.itemGenre}>🎭 Genre: {item.genres}</Text>
-          </View>
+          <TouchableOpacity onPress={() => toggleExpand(item.id)}>
+            <View style={styles.card}>
+              <Text style={styles.itemTitle}>📺 {item.title}</Text>
+              <Text style={styles.itemRating}>{item.rating}</Text>
+              <Text style={styles.itemGenre}>🎭 Genre: {item.genres}</Text>
+              {expandedItems[item.id] && (
+                <Text style={styles.itemDescription}>📝 {item.description}</Text>
+              )}
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>
