@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
   View, Text, TextInput, Button, FlatList, StyleSheet, Alert,
-  TouchableOpacity, LayoutAnimation, UIManager, Platform
+  TouchableOpacity, LayoutAnimation, UIManager, Platform, Dimensions
 } from "react-native";
 import RNFS from "react-native-fs";
 import { parse } from "papaparse";
+import { LineChart } from "react-native-chart-kit";
 
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -15,6 +16,9 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [animes, setAnimes] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
+  const [movieViewData, setMovieViewData] = useState([]);
+  const [animeViewData, setAnimeViewData] = useState([]);
+  
   const fileName = "anime.csv";
   const moviefile = "tmdb.csv";
 
@@ -92,7 +96,7 @@ export default function App() {
       />
       <Button title="Search" onPress={fetchRecommendations} />
 
-      {/* 🎬 MOVIES LIST */}
+      {/* MOVIES LIST */}
       <Text style={styles.subtitle}>🎬 Recommended Movies:</Text>
       <FlatList
         data={movies}
@@ -111,7 +115,7 @@ export default function App() {
         )}
       />
 
-      {/* 🎭 SHOWS LIST */}
+      {/* SHOWS LIST */}
       <Text style={styles.subtitle}>🎭 Recommended Shows:</Text>
       <FlatList
         data={animes}
@@ -132,6 +136,7 @@ export default function App() {
     </View>
   );
 }
+//Visual style's 
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: "#f8f8f8", flex: 1 },
   title: { fontSize: 26, fontWeight: "bold", textAlign: "center", marginBottom: 10 },
