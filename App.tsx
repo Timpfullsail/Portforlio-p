@@ -16,8 +16,8 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [animes, setAnimes] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
-  const [movieViewData, setMovieViewData] = useState([]);
-  const [animeViewData, setAnimeViewData] = useState([]);
+  //const [movieViewData, setMovieViewData] = useState([]);
+  //const [animeViewData, setAnimeViewData] = useState([]);
   
   const fileName = "anime.csv";
   const moviefile = "tmdb.csv";
