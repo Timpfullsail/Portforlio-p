@@ -11,14 +11,16 @@ import { LineChart } from "react-native-chart-kit";
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
+const generateRandomViewership = () => {
+  return Array.from({ length: 12 }, () => Math.floor(Math.random() * 200) + 20);
+};
+
 export default function App() {
   const [input, setInput] = useState("");
   const [movies, setMovies] = useState([]);
   const [animes, setAnimes] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
-  //const [movieViewData, setMovieViewData] = useState([]);
-  //const [animeViewData, setAnimeViewData] = useState([]);
-  
+
   const fileName = "anime.csv";
   const moviefile = "tmdb.csv";
 
@@ -29,15 +31,17 @@ export default function App() {
       const exists = await RNFS.existsAssets(fileName);
       if (!exists) {
         console.error("❌ File does NOT exist in assets!");
-        Alert.alert("Error", "Req.txt is missing in assets. Make sure it's placed correctly and rebuild.");
+        Alert.alert("Error", "Anime file is missing in assets. Make sure it's placed correctly and rebuild.");
         return;
       }
+
       const movieExists = await RNFS.existsAssets(moviefile);
       if (!movieExists) {
         console.error(`❌ ${moviefile} does NOT exist in assets!`);
         Alert.alert("Error", `${moviefile} is missing in assets. Make sure it's placed correctly and rebuild.`);
         return;
       }
+
       const anime = await RNFS.readFileAssets(fileName, "utf8");
       const movie = await RNFS.readFileAssets(moviefile, "utf8");
 
@@ -48,8 +52,8 @@ export default function App() {
       const movieRows = parse(movie, { header: true }).data;
 
       console.log("🔍 First few rows from Anime CSV:", animeRows.slice(0, 5));
-      console.log("🔍 First few rows from Anime CSV:", movieRows.slice(0, 5));
-      //The errors from this line down have to do with them being an any type nothing specific but still functional
+      console.log("🔍 First few rows from Movie CSV:", movieRows.slice(0, 5));
+
       const filteredAnimes = animeRows
         .filter(row => row.title?.toLowerCase().includes(input.toLowerCase()))
         .map(row => ({
@@ -58,6 +62,7 @@ export default function App() {
           rating: row.score || "N/A",
           genres: row.genres || "Unknown",
           description: row.synopsis || "No description available",
+          viewership: generateRandomViewership(),
         }));
 
       const filteredMovies = movieRows
@@ -68,10 +73,11 @@ export default function App() {
           rating: row.vote_average || "N/A",
           popularity: row.popularity || "Unknown",
           description: row.overview || "No description available",
+          viewership: generateRandomViewership(), 
         }));
+
       setMovies(filteredMovies);
       setAnimes(filteredAnimes);
-
     } catch (error) {
       console.error("❌ Error reading file:", error);
       Alert.alert("Error", `Could not read ${fileName} or ${moviefile}. Try rebuilding the app.`);
@@ -82,9 +88,10 @@ export default function App() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedItems(prevState => ({
       ...prevState,
-      [id]: !prevState[id] || false, // Toggle expansion
+      [id]: !prevState[id] || false,
     }));
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Film Sage</Text>
@@ -105,17 +112,36 @@ export default function App() {
           <TouchableOpacity onPress={() => toggleExpand(item.id)}>
             <View style={styles.card}>
               <Text style={styles.itemTitle}>🎬 {item.title}</Text>
-              <Text style={styles.itemRating}>{item.rating}</Text>
+              <Text style={styles.itemRating}>⭐ Rating: {item.rating}</Text>
               <Text style={styles.itemGenre}>🎭 Popularity: {item.popularity}</Text>
+
               {expandedItems[item.id] && (
-                <Text style={styles.itemDescription}>📝 {item.description}</Text>
+                <>
+                  <Text style={styles.itemDescription}>📝 {item.description}</Text>
+                  <LineChart
+                    data={{
+                      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                      datasets: [{ data: item.viewership }]
+                    }}
+                    width={Dimensions.get("window").width - 60}
+                    height={200}
+                    yAxisLabel=""
+                    chartConfig={{
+                      backgroundGradientFrom: "#e3f2fd",
+                      backgroundGradientTo: "#bbdefb",
+                      decimalPlaces: 0,
+                      color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+                    }}
+                    style={{ marginVertical: 8, borderRadius: 16 }}
+                  />
+                </>
               )}
             </View>
           </TouchableOpacity>
         )}
       />
 
-      {/* SHOWS LIST */}
+      
       <Text style={styles.subtitle}>🎭 Recommended Shows:</Text>
       <FlatList
         data={animes}
@@ -124,10 +150,29 @@ export default function App() {
           <TouchableOpacity onPress={() => toggleExpand(item.id)}>
             <View style={styles.card}>
               <Text style={styles.itemTitle}>📺 {item.title}</Text>
-              <Text style={styles.itemRating}>{item.rating}</Text>
+              <Text style={styles.itemRating}>⭐ Rating: {item.rating}</Text>
               <Text style={styles.itemGenre}>🎭 Genre: {item.genres}</Text>
+
               {expandedItems[item.id] && (
-                <Text style={styles.itemDescription}>📝 {item.description}</Text>
+                <>
+                  <Text style={styles.itemDescription}>📝 {item.description}</Text>
+                  <LineChart
+                    data={{
+                      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                      datasets: [{ data: item.viewership }]
+                    }}
+                    width={Dimensions.get("window").width - 60}
+                    height={200}
+                    yAxisLabel=""
+                    chartConfig={{
+                      backgroundGradientFrom: "#e3f2fd",
+                      backgroundGradientTo: "#bbdefb",
+                      decimalPlaces: 0,
+                      color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
+                    }}
+                    style={{ marginVertical: 8, borderRadius: 16 }}
+                  />
+                </>
               )}
             </View>
           </TouchableOpacity>
