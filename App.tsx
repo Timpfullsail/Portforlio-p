@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   View, Text, TextInput, Button, FlatList, StyleSheet, Alert,
-  TouchableOpacity, LayoutAnimation, UIManager, Platform, Dimensions
+  TouchableOpacity, LayoutAnimation, UIManager, Platform, Dimensions, ActivityIndicator
 } from "react-native";
 import RNFS from "react-native-fs";
 import { parse } from "papaparse";
@@ -20,12 +20,30 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [animes, setAnimes] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const fileName = "anime.csv";
   const moviefile = "tmdb.csv";
 
+  const updateRecentlyViewed = (searchTerm) => {
+    setRecentlyViewed(prev => {
+      const updatedList = [searchTerm, ...prev.filter(item => item !== searchTerm)];
+      return updatedList.slice(0, 5);
+    });
+  };
+  const handleRecentSearchSelect = (searchTerm) => {
+    setInput(searchTerm);
+    setShowDropdown(false);
+    fetchRecommendations(); 
+  };
+
   const fetchRecommendations = async () => {
     try {
+      if (!input.trim()) return;
+      setLoading(true);
+      updateRecentlyViewed(input);
       console.log(`📄 Attempting to read: ${fileName} and ${moviefile}`);
 
       const exists = await RNFS.existsAssets(fileName);
@@ -73,7 +91,7 @@ export default function App() {
           rating: row.vote_average || "N/A",
           popularity: row.popularity || "Unknown",
           description: row.overview || "No description available",
-          viewership: generateRandomViewership(), 
+          viewership: generateRandomViewership(),
         }));
 
       setMovies(filteredMovies);
@@ -81,6 +99,8 @@ export default function App() {
     } catch (error) {
       console.error("❌ Error reading file:", error);
       Alert.alert("Error", `Could not read ${fileName} or ${moviefile}. Try rebuilding the app.`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,15 +115,35 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Film Sage</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter movie or anime name"
-        value={input}
-        onChangeText={setInput}
-      />
-      <Button title="Search" onPress={fetchRecommendations} />
 
-      {/* MOVIES LIST */}
+      <View>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter movie or anime name"
+          value={input}
+          onChangeText={setInput}
+          onFocus={() => setShowDropdown(true)}
+        />
+
+        {showDropdown && recentlyViewed.length > 0 && (
+          <View style={styles.dropdown}>
+            {recentlyViewed.map((item, index) => (
+              <TouchableOpacity key={index} onPress={() => handleRecentSearchSelect(item)}>
+                <Text style={styles.dropdownItem}>🔍 {item}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </View>
+
+      <Button title="Search" onPress={fetchRecommendations} />
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007BFF" />
+          <Text style={styles.loadingText}>Loading Recommendations...</Text>
+        </View>
+      )}
+      
       <Text style={styles.subtitle}>🎬 Recommended Movies:</Text>
       <FlatList
         data={movies}
@@ -141,7 +181,7 @@ export default function App() {
         )}
       />
 
-      
+
       <Text style={styles.subtitle}>🎭 Recommended Shows:</Text>
       <FlatList
         data={animes}
@@ -188,6 +228,8 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderColor: "#ccc", padding: 8, marginVertical: 10, borderRadius: 5, backgroundColor: "#fff" },
   subtitle: { fontSize: 20, fontWeight: "bold", marginTop: 20, marginBottom: 10, color: "#333" },
   resultItem: { fontSize: 16, padding: 5, borderBottomWidth: 1, borderColor: "#ddd" },
+  loadingContainer: { alignItems: "center", marginTop: 20 },
+  loadingText: { fontSize: 16, marginTop: 10 },
   card: {
     backgroundColor: "#fff",
     padding: 12, marginVertical: 5,
