@@ -123,6 +123,7 @@ export default function App() {
           value={input}
           onChangeText={setInput}
           onFocus={() => setShowDropdown(true)}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 10)}
         />
 
         {showDropdown && recentlyViewed.length > 0 && (
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1,
     shadowRadius: 4, elevation: 3
   },
-  
+
   itemTitle: { fontSize: 18, fontWeight: "bold", color: "#000" },
   itemRating: { fontSize: 16, fontWeight: "bold", color: "#ff9900", marginTop: 3 },
   itemGenre: { fontSize: 14, color: "#666", fontStyle: "italic", marginTop: 3 },
