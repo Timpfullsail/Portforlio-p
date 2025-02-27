@@ -36,7 +36,7 @@ export default function App() {
   const handleRecentSearchSelect = (searchTerm) => {
     setInput(searchTerm);
     setShowDropdown(false);
-    fetchRecommendations(); 
+    fetchRecommendations();
   };
 
   const fetchRecommendations = async () => {
@@ -133,6 +133,11 @@ export default function App() {
                 <Text style={styles.dropdownItem}>🔍 {item}</Text>
               </TouchableOpacity>
             ))}
+
+            {/* Clear History Button */}
+            <TouchableOpacity onPress={() => setRecentlyViewed([])} style={styles.clearButton}>
+              <Text style={styles.clearButtonText}>🗑️ Clear History</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -143,8 +148,10 @@ export default function App() {
           <ActivityIndicator size="large" color="#007BFF" />
           <Text style={styles.loadingText}>Loading Recommendations...</Text>
         </View>
+
       )}
-      
+
+
       <Text style={styles.subtitle}>🎬 Recommended Movies:</Text>
       <FlatList
         data={movies}
@@ -229,6 +236,10 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderColor: "#ccc", padding: 8, marginVertical: 10, borderRadius: 5, backgroundColor: "#fff" },
   subtitle: { fontSize: 20, fontWeight: "bold", marginTop: 20, marginBottom: 10, color: "#333" },
   resultItem: { fontSize: 16, padding: 5, borderBottomWidth: 1, borderColor: "#ddd" },
+  dropdown: { backgroundColor: "#fff", padding: 10, borderRadius: 5, marginTop: 5, elevation: 5 },
+  dropdownItem: { fontSize: 16, padding: 5, borderBottomWidth: 1, borderColor: "#ddd" },
+  clearButton: { padding: 10, backgroundColor: "#ff4d4d", borderRadius: 3, marginTop: 5, alignItems: "center" },
+  clearButtonText: { color: "#fff", fontWeight: "bold" },
   loadingContainer: { alignItems: "center", marginTop: 20 },
   loadingText: { fontSize: 16, marginTop: 10 },
   card: {
