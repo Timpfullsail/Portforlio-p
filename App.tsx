@@ -12,7 +12,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 const generateRandomViewership = () => {
-  return Array.from({ length: 12 }, () => Math.floor(Math.random() * 200) + 20);
+  return Array.from({ length: 12 }, () => Math.floor(Math.random() * 5000) + 500);
 };
 
 export default function App() {
@@ -153,7 +153,7 @@ export default function App() {
             <View style={styles.card}>
               <Text style={styles.itemTitle}>🎬 {item.title}</Text>
               <Text style={styles.itemRating}>⭐ Rating: {item.rating}</Text>
-              <Text style={styles.itemGenre}>🎭 Popularity: {item.popularity}</Text>
+              <Text style={styles.itemGenre}>🎭 Popularity score: {parseFloat(item.popularity).toFixed(2)}%</Text>
 
               {expandedItems[item.id] && (
                 <>
@@ -163,9 +163,10 @@ export default function App() {
                       labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                       datasets: [{ data: item.viewership }]
                     }}
-                    width={Dimensions.get("window").width - 60}
-                    height={200}
+                    width={Dimensions.get("window").width - 45}
+                    height={225}
                     yAxisLabel=""
+                    yAxisSuffix="view"
                     chartConfig={{
                       backgroundGradientFrom: "#e3f2fd",
                       backgroundGradientTo: "#bbdefb",
@@ -181,7 +182,6 @@ export default function App() {
         )}
       />
 
-
       <Text style={styles.subtitle}>🎭 Recommended Shows:</Text>
       <FlatList
         data={animes}
@@ -192,7 +192,6 @@ export default function App() {
               <Text style={styles.itemTitle}>📺 {item.title}</Text>
               <Text style={styles.itemRating}>⭐ Rating: {item.rating}</Text>
               <Text style={styles.itemGenre}>🎭 Genre: {item.genres}</Text>
-
               {expandedItems[item.id] && (
                 <>
                   <Text style={styles.itemDescription}>📝 {item.description}</Text>
@@ -201,9 +200,10 @@ export default function App() {
                       labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                       datasets: [{ data: item.viewership }]
                     }}
-                    width={Dimensions.get("window").width - 60}
-                    height={200}
+                    width={Dimensions.get("window").width - 45}
+                    height={225}
                     yAxisLabel=""
+                    yAxisSuffix="view"
                     chartConfig={{
                       backgroundGradientFrom: "#e3f2fd",
                       backgroundGradientTo: "#bbdefb",
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1,
     shadowRadius: 4, elevation: 3
   },
-
+  
   itemTitle: { fontSize: 18, fontWeight: "bold", color: "#000" },
   itemRating: { fontSize: 16, fontWeight: "bold", color: "#ff9900", marginTop: 3 },
   itemGenre: { fontSize: 14, color: "#666", fontStyle: "italic", marginTop: 3 },
