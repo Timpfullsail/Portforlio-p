@@ -71,7 +71,7 @@ export default function App() {
 
       console.log("🔍 First few rows from Anime CSV:", animeRows.slice(0, 5));
       console.log("🔍 First few rows from Movie CSV:", movieRows.slice(0, 5));
-
+      /* How my data is being filtered this is where my issues is with how its communicated down below and its two files*/
       const filteredAnimes = animeRows
         .filter(row => row.title?.toLowerCase().includes(input.toLowerCase()))
         .map(row => ({
@@ -111,7 +111,7 @@ export default function App() {
       [id]: !prevState[id] || false,
     }));
   };
-
+/*how everything is viewed and the button funtionallity of when it communicates with the above functions*/
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Film Sage</Text>
@@ -125,7 +125,7 @@ export default function App() {
           onFocus={() => setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 10)}
         />
-
+          
         {showDropdown && recentlyViewed.length > 0 && (
           <View style={styles.dropdown}>
             {recentlyViewed.map((item, index) => (
@@ -134,7 +134,7 @@ export default function App() {
               </TouchableOpacity>
             ))}
 
-            {/* Clear History Button */}
+            
             <TouchableOpacity onPress={() => setRecentlyViewed([])} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>🗑️ Clear History</Text>
             </TouchableOpacity>
